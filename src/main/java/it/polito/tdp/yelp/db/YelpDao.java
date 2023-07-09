@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.tdp.yelp.model.Business;
 import it.polito.tdp.yelp.model.Review;
@@ -108,6 +109,70 @@ public class YelpDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public List<User> getUsers(Map<String,User> usersMap, int n){
+		String sql = "SELECT user_id "
+				+ "FROM reviews "
+				+ "GROUP BY user_id "
+				+ "HAVING COUNT(*)>=?";
+		List<User> result = new ArrayList<User>();
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, n);
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+
+				if (usersMap.containsKey(res.getString("user_id"))) {
+				User user = usersMap.get(res.getString("user_id"));
+						
+				result.add(user);
+				}
+			}
+			res.close();
+			st.close();
+			conn.close();
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public void setBusinesses(Map<String,User> usersMap, int anno, Map<String, Business> businessMap){
+		String sql = "SELECT user_id, business_id "
+				+ "FROM reviews "
+				+ "WHERE YEAR(review_date) = ? "
+				+ "ORDER BY user_id";
+		
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, anno);
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				
+				if (usersMap.containsKey(res.getString("user_id")) && businessMap.containsKey(res.getString("business_id"))) {
+
+				User user = usersMap.get(res.getString("user_id"));
+				Business business = businessMap.get(res.getString("business_id"));
+						
+				user.getBusinessList().add(business);
+				}
+			}
+			res.close();
+			st.close();
+			conn.close();
+			return ;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return ;
 		}
 	}
 	

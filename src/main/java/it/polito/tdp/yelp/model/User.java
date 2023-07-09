@@ -1,6 +1,8 @@
 package it.polito.tdp.yelp.model;
 
-public class User {
+import java.util.*;
+
+public class User implements Comparable<User>{
 	private String userId;
 	private int votesFunny;
 	private int votesUseful;
@@ -9,6 +11,16 @@ public class User {
 	private double averageStars;
 	private int reviewCount;
 	
+	Set<Business> businessList;
+	
+	public Set<Business> getBusinessList() {
+		return businessList;
+	}
+
+	public void setBusinessList(Set<Business> businessList) {
+		this.businessList = businessList;
+	}
+
 	public User(String userId, int votesFunny, int votesUseful, int votesCool, String name, double averageStars,
 			int reviewCount) {
 		super();
@@ -19,6 +31,7 @@ public class User {
 		this.name = name;
 		this.averageStars = averageStars;
 		this.reviewCount = reviewCount;
+		this.businessList = new HashSet<>();
 	}
 
 	public String getUserId() {
@@ -105,6 +118,12 @@ public class User {
 	@Override
 	public String toString() {
 		return String.format("%s (%s)",  name, userId);
+	}
+
+	@Override
+	public int compareTo(User o) {
+		// TODO Auto-generated method stub
+		return (int) this.name.compareTo(o.getName());
 	}
 	
 }
